@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduConnect - Counseling</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: #f4f4f9;
+        }
+        .counseling-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .session-card {
+            margin-bottom: 20px;
+        }
+        .session-card .btn-danger {
+            float: right;
+        }
+        .date-picker {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="counseling-container">
+        <h2>Book a Counseling Session</h2>
+        <form id="counseling-form">
+            <div class="mb-3">
+                <input type="text" class="form-control" placeholder="Full Name" required>
+            </div>
+            <div class="mb-3">
+                <input type="email" class="form-control" placeholder="Email" required>
+            </div>
+            <div class="mb-3">
+                <select class="form-select" required>
+                    <option value="" disabled selected>Select Mentor</option>
+                    <option value="mentor1">Mentor 1</option>
+                    <option value="mentor2">Mentor 2</option>
+                    <option value="mentor3">Mentor 3</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="sessionDate">Select Date and Time:</label>
+                <input type="datetime-local" class="form-control" id="sessionDate" required>
+            </div>
+            <div class="mb-3">
+                <select class="form-select" required>
+                    <option value="" disabled selected>Select Session Type</option>
+                    <option value="online">Online</option>
+                    <option value="inperson">In-person</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <textarea class="form-control" placeholder="Message" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Book Session</button>
+        </form>
+
+        <hr>
+
+        <h3>Upcoming Sessions</h3>
+        <div class="session-card card">
+            <div class="card-body">
+                <h5 class="card-title">Mentor 1 - Online</h5>
+                <p class="card-text">Date: 2023-04-25 14:00</p>
+                <p class="card-text">Status: Pending</p>
+                <button class="btn btn-danger">Cancel</button>
+            </div>
+        </div>
+        <div class="session-card card">
+            <div class="card-body">
+                <h5 class="card-title">Mentor 2 - In-person</h5>
+                <p class="card-text">Date: 2023-04-26 10:00</p>
+                <p class="card-text">Status: Pending</p>
+                <button class="btn btn-danger">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Placeholder functionality for booking and canceling sessions
+        document.getElementById('counseling-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            alert('Session booked successfully!');
+            // Clear the form after submission
+            event.target.reset();
+        });
+
+        const cancelButtons = document.querySelectorAll('.btn-danger');
+        cancelButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                if (confirm('Are you sure you want to cancel this session?')) {
+                    button.closest('.session-card').remove();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

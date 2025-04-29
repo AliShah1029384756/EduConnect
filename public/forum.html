@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduConnect - Forum</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <style>
+        body { background: #f8f9fa; }
+        .forum-container { margin-top: 50px; }
+        .post-card { transition: transform 0.2s; }
+        .post-card:hover { transform: translateY(-3px); }
+        #noPostsMessage { display: none; }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" aria-label="Main navigation">
+        <div class="container">
+            <a class="navbar-brand" href="#"><i class="bi bi-graduation-cap me-2"></i>EduConnect</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="forum.html" aria-current="page">Forum</a></li>
+                    <li class="nav-item"><a class="nav-link" href="counseling.html">Counseling</a></li>
+                    <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
+                    
+                    <li class="nav-item">
+                        <a class="nav-link btn btn-outline-warning ms-2" href="signout.html">Sign Out</a>
+                      </li>
+                      
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Forum Main -->
+    <main class="forum-container container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="m-0">Forum</h2>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#askModal">
+                <i class="bi bi-plus-circle me-1"></i>Ask Question
+            </button>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="mb-4">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search posts...">
+        </div>
+
+        <!-- Posts Listing -->
+        <div id="postsList" class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card post-card">
+                    <div class="card-body">
+                        <span class="badge bg-secondary mb-2">Algorithms</span>
+                        <h5 class="card-title">How to optimize algorithm complexity?</h5>
+                        <p class="card-text">I need help understanding time complexity in sorting algorithms...</p>
+                        <p class="text-muted small mb-1">By Ali Raza on Apr 22, 2025 • 5 replies • 10 upvotes</p>
+                        <a href="#" class="btn btn-sm btn-outline-primary">View</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card post-card">
+                    <div class="card-body">
+                        <span class="badge bg-secondary mb-2">CSS</span>
+                        <h5 class="card-title">Best practices for CSS architecture?</h5>
+                        <p class="card-text">Looking for guidance on organizing CSS for a large project...</p>
+                        <p class="text-muted small mb-1">By Sara Khan on Apr 20, 2025 • 3 replies • 8 upvotes</p>
+                        <a href="#" class="btn btn-sm btn-outline-primary">View</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Additional posts here -->
+        </div>
+
+        <!-- No Posts Message -->
+        <p id="noPostsMessage" class="text-center text-muted">No posts found.</p>
+
+        <!-- Load More Button -->
+        <div class="d-flex justify-content-center my-4">
+            <button id="loadMoreBtn" class="btn btn-outline-primary">Load More</button>
+        </div>
+    </main>
+
+    <!-- Ask Question Modal -->
+    <div class="modal fade" id="askModal" tabindex="-1" aria-labelledby="askModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="askModalLabel">Ask a Question</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="askForm">
+                        <div class="mb-3">
+                            <input type="text" class="form-control" placeholder="Question Title" required>
+                        </div>
+                        <div class="mb-3">
+                            <textarea class="form-control" rows="4" placeholder="Describe your question..." required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Search Filter
+        document.getElementById('searchInput').addEventListener('keyup', function() {
+            const filter = this.value.toLowerCase();
+            const cards = Array.from(document.querySelectorAll('.post-card'));
+            let visibleCount = 0;
+            cards.forEach(card => {
+                const title = card.querySelector('.card-title').textContent.toLowerCase();
+                const text = card.querySelector('.card-text').textContent.toLowerCase();
+                if (title.includes(filter) || text.includes(filter)) {
+                    card.parentElement.style.display = '';
+                    visibleCount++;
+                } else {
+                    card.parentElement.style.display = 'none';
+                }
+            });
+            document.getElementById('noPostsMessage').style.display = visibleCount === 0 ? 'block' : 'none';
+        });
+
+        // Ask Form Submission
+        document.getElementById('askForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Your question has been submitted!');
+            const askModal = bootstrap.Modal.getInstance(document.getElementById('askModal'));
+            askModal.hide();
+            this.reset();
+        });
+
+        // Load More Button (stub)
+        document.getElementById('loadMoreBtn').addEventListener('click', function() {
+            alert('Load more posts functionality coming soon!');
+        });
+    </script>
+</body>
+</html>

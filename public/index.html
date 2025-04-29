@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EduConnect - Home</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"/>
+  <!-- Custom CSS -->
+  <link href="styles.css" rel="stylesheet"/>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="index.html"><i class="fas fa-graduation-cap me-2"></i>EduConnect</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="forum.html">Forum</a></li>
+          <li class="nav-item"><a class="nav-link" href="counseling.html">Counseling</a></li>
+          <li class="nav-item"><a class="nav-link" href="profile.html">Profile</a></li>
+          <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+          <li class="nav-item"><a class="nav-link btn btn-outline-light ms-2" href="index1.html">Sign In</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero-section text-center py-5">
+    <div class="container">
+      <h1 class="display-4">Welcome to EduConnect</h1>
+      <p class="lead">Connect, Learn, and Grow with our Educational Community</p>
+      <div>
+        <a href="#featured-posts" class="btn btn-primary">Explore Posts</a>
+        <div class="btn-group">
+          <button type="button" class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
+            Quick Links
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="forum.html"><i class="fas fa-comments me-2"></i>Forum</a></li>
+            <li><a class="dropdown-item" href="counseling.html"><i class="fas fa-user-md me-2"></i>Counseling</a></li>
+            <li><a class="dropdown-item" href="profile.html"><i class="fas fa-user me-2"></i>Profile</a></li>
+            <li><a class="dropdown-item" href="contact.html"><i class="fas fa-envelope me-2"></i>Contact</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container my-5">
+    <section id="featured-posts" class="text-center">
+      <h2>Featured Posts</h2>
+      <div class="row">
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">The Future of Online Learning</h5>
+              <p>Explore the latest trends in e-learning...</p>
+              <a href="#" class="btn btn-primary">Read More</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Effective Study Techniques</h5>
+              <p>Discover proven methods to enhance learning...</p>
+              <a href="#" class="btn btn-primary">Read More</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Career Guidance for Students</h5>
+              <p>Expert advice on choosing the right career...</p>
+              <a href="#" class="btn btn-primary">Read More</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer With Quick Links -->
+  <footer class="text-center py-4 bg-dark text-light">
+    <div class="container">
+      <p>&copy; 2023 EduConnect. All rights reserved.</p>
+      <div class="mt-3">
+        <a href="index.html" class="text-light me-3" data-bs-toggle="tooltip" title="Home">
+          <i class="fas fa-home"></i>
+        </a>
+        <a href="forum.html" class="text-light me-3" data-bs-toggle="tooltip" title="Forum">
+          <i class="fas fa-comments"></i>
+        </a>
+        <a href="counseling.html" class="text-light me-3" data-bs-toggle="tooltip" title="Counseling">
+          <i class="fas fa-user-md"></i>
+        </a>
+        <a href="profile.html" class="text-light me-3" data-bs-toggle="tooltip" title="Profile">
+          <i class="fas fa-user"></i>
+        </a>
+        <a href="contact.html" class="text-light me-3" data-bs-toggle="tooltip" title="Contact">
+          <i class="fas fa-envelope"></i>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Activate Tooltips -->
+  <script>
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+  </script>
+
+</body>
+</html>

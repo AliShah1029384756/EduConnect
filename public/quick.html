@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick Link Button</title>
+  <style>
+    /* Style for the quick link button */
+    .quick-link-btn {
+      background-color: #4CAF50; /* Green background */
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background-color 0.3s;
+    }
+
+    .quick-link-btn:hover {
+      background-color: #45a049; /* Darker green on hover */
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Quick Link Button -->
+  <button class="quick-link-btn" onclick="window.location.href='about.html'">Go to About</button>
+
+  <script>
+    // JavaScript function to handle button action (optional if you want more dynamic behavior)
+    function navigateToLink() {
+      window.location.href = "about.html"; // Change this URL to where you want to navigate
+    }
+  </script>
+
+</body>
+</html>
