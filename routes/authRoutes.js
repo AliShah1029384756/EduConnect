@@ -6,9 +6,10 @@ const {
   forgotPassword,
   resetPassword
 } = require('../controllers/authController');
+const { authValidators, validateRequest } = require('../middleware/validators');
 
-router.post('/signin', signIn);
-router.post('/signup', signUp);
+router.post('/signin', authValidators.signIn, validateRequest, signIn);
+router.post('/signup', authValidators.signUp, validateRequest, signUp);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
 

@@ -3,7 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="EduConnect helps students connect through forums, counseling, and support.">
+  <meta property="og:title" content="EduConnect">
+  <meta property="og:description" content="Student support, mentorship, and counseling in one platform.">
+  <meta property="og:image" content="images/social-preview.svg">
   <title>EduConnect - Home</title>
+  <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -12,7 +17,7 @@
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container">
       <a class="navbar-brand" href="index.html">EduConnect</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-label="Toggle navigation" title="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
@@ -20,6 +25,10 @@
           <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
           <li class="nav-item"><a class="nav-link" href="forum.html">Forum</a></li>
           <li class="nav-item"><a class="nav-link" href="counseling.html">Counseling</a></li>
+          <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+          <li class="nav-item"><a class="nav-link" href="privacy.html">Privacy</a></li>
+          <li class="nav-item"><a class="nav-link" href="register.html">Register</a></li>
           <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
         </ul>
       </div>
@@ -27,38 +36,68 @@
   </nav>
 
   <!-- Hero Section -->
-  <section class="hero-section">
-    <div class="container text-center py-5">
-      <h1>Welcome to EduConnect</h1>
-      <p>Your educational support platform</p>
-      <a href="login.html" class="btn btn-light btn-lg">Get Started</a>
+  <section class="hero-section page-fade">
+    <div class="container">
+      <div class="hero-panel">
+        <div class="row g-4 align-items-center">
+          <div class="col-lg-7">
+            <h1 class="hero-title">Where Students, Mentors, and Guidance Meet</h1>
+            <p class="hero-subtitle">EduConnect gives learners one place to ask questions, book counseling, and track growth with confidence.</p>
+            <div class="hero-cta d-flex flex-wrap gap-2">
+              <a href="register.html" class="btn btn-warning btn-lg">Create Free Account</a>
+              <a href="forum.html" class="btn btn-outline-light btn-lg">Explore Forum</a>
+            </div>
+          </div>
+          <div class="col-lg-5 d-flex flex-wrap gap-2 justify-content-lg-end">
+            <div class="hero-stat">
+              <strong>24/7</strong>
+              <span>Peer Support</span>
+            </div>
+            <div class="hero-stat">
+              <strong>1:1</strong>
+              <span>Counseling Access</span>
+            </div>
+            <div class="hero-stat">
+              <strong>Safe</strong>
+              <span>Moderated Space</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- Features -->
   <section class="container my-5">
-    <div class="row">
+    <div class="text-center mb-4 page-fade">
+      <h2 class="fw-bold">Built For Real Student Needs</h2>
+      <p class="text-muted mb-0">Practical tools for conversations, support, and progress</p>
+    </div>
+    <div class="row g-4">
       <div class="col-md-4">
         <div class="card feature-card">
           <div class="card-body">
-            <h5>Forum</h5>
-            <p>Connect with other students</p>
+            <div class="feature-icon">F</div>
+            <h5>Forum Discussions</h5>
+            <p class="mb-0 text-muted">Ask questions, share strategies, and learn from peers in topic-based conversations.</p>
           </div>
         </div>
       </div>
       <div class="col-md-4">
         <div class="card feature-card">
           <div class="card-body">
-            <h5>Counseling</h5>
-            <p>Book sessions with experts</p>
+            <div class="feature-icon">C</div>
+            <h5>Counseling Booking</h5>
+            <p class="mb-0 text-muted">Schedule support sessions and keep track of your requests in one dashboard.</p>
           </div>
         </div>
       </div>
       <div class="col-md-4">
         <div class="card feature-card">
           <div class="card-body">
-            <h5>Resources</h5>
-            <p>Access study materials</p>
+            <div class="feature-icon">P</div>
+            <h5>Profile & Growth</h5>
+            <p class="mb-0 text-muted">Manage your profile, identity, and learning journey with a clear personal space.</p>
           </div>
         </div>
       </div>

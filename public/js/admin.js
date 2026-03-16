@@ -40,6 +40,9 @@ async function loadDashboardStats() {
 }
 
 async function loadUsers() {
+  const tbody = document.getElementById('usersTable');
+  tbody.innerHTML = '<tr><td colspan="4" class="text-muted">Loading users...</td></tr>';
+
   try {
     const response = await fetch('/api/admin/users', {
       headers: {
@@ -57,6 +60,9 @@ async function loadUsers() {
 }
 
 async function loadSessions() {
+  const tbody = document.getElementById('sessionsTable');
+  tbody.innerHTML = '<tr><td colspan="4" class="text-muted">Loading sessions...</td></tr>';
+
   try {
     const response = await fetch('/api/admin/sessions', {
       headers: {
@@ -76,6 +82,11 @@ async function loadSessions() {
 function renderUsers(users) {
   const tbody = document.getElementById('usersTable');
   tbody.innerHTML = '';
+
+  if (!users.length) {
+    tbody.innerHTML = '<tr><td colspan="4" class="text-muted">No users found.</td></tr>';
+    return;
+  }
 
   users.forEach(user => {
     const tr = document.createElement('tr');
@@ -105,6 +116,11 @@ function renderUsers(users) {
 function renderSessions(sessions) {
   const tbody = document.getElementById('sessionsTable');
   tbody.innerHTML = '';
+
+  if (!sessions.length) {
+    tbody.innerHTML = '<tr><td colspan="4" class="text-muted">No sessions found.</td></tr>';
+    return;
+  }
 
   sessions.forEach(session => {
     const tr = document.createElement('tr');
@@ -172,4 +188,9 @@ function getStatusColor(status) {
     case 'cancelled': return 'danger';
     default: return 'secondary';
   }
+}
+
+function showAlert(message, type) {
+  const normalized = type === 'danger' ? 'error' : type;
+  showToast(message, normalized);
 }

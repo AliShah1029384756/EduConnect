@@ -220,7 +220,7 @@ async function handleDeletePost(e) {
 
 // Helper functions
 function redirectToLogin() {
-  window.location.href = '/index1.html';
+  window.location.href = '/login.html';
 }
 
 function showLoader(container) {
@@ -259,20 +259,8 @@ function showError(message, container = 'body') {
 }
 
 function showAlert(message, type) {
-  const alert = document.createElement('div');
-  alert.className = `alert alert-${type} alert-dismissible fade show`;
-  alert.innerHTML = `
-    ${message}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-  `;
-  
-  const container = document.getElementById('alertsContainer') || document.body;
-  container.prepend(alert);
-  
-  setTimeout(() => {
-    const bsAlert = new bootstrap.Alert(alert);
-    bsAlert.close();
-  }, 5000);
+  const normalized = type === 'danger' ? 'error' : type;
+  showToast(message, normalized);
 }
 
 function resetPostForm() {

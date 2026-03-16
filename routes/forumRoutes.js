@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const forumController = require('../controllers/forumController');
-//const authenticate = require('../middleware/authenticate');
+const { isAuthenticated } = require('../middleware/auth');
+const { forumValidators, validateRequest } = require('../middleware/validators');
 
-
-router.post('/', authenticate, forumController.createPost);
-//router.put('/:id', authenticate, forumController.updatePost); // ✅ This now works
-router.delete('/:id', authenticate, forumController.deletePost);
-
+router.get('/all', isAuthenticated, forumController.getAllPosts);
+router.get('/', isAuthenticated, forumController.getAllPosts);
+router.post('/', isAuthenticated, forumValidators.createPost, validateRequest, forumController.createPost);
+router.put('/:id', isAuthenticated, forumController.updatePost);
+router.delete('/:id', isAuthenticated, forumController.deletePost);
 
 module.exports = router;
