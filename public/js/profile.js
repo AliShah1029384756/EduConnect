@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
   if (!checkAuth()) return;
 
-  const user = JSON.parse(localStorage.getItem('user'));
+  const user = getUser();
   loadProfile(user);
 
   // Form submission
@@ -30,12 +30,8 @@ function loadProfile(user) {
 
 async function updateProfile() {
   try {
-    const response = await fetch('/api/profile', {
+    const response = await apiFetch('/api/profile', {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
       body: JSON.stringify({
         name: document.getElementById('nameInput').value,
         bio: document.getElementById('bioInput').value
@@ -59,11 +55,8 @@ async function uploadImage(file) {
   formData.append('image', file);
 
   try {
-    const response = await fetch('/api/profile/upload', {
+    const response = await apiFetch('/api/profile/upload', {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
       body: formData
     });
 
@@ -72,7 +65,7 @@ async function uploadImage(file) {
       document.getElementById('profileImage').src = data.imageUrl;
       
       // Update local user data
-      const user = JSON.parse(localStorage.getItem('user'));
+      const user = getUser() || {};
       user.imageUrl = data.imageUrl;
       localStorage.setItem('user', JSON.stringify(user));
       

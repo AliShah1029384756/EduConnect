@@ -13,6 +13,9 @@
       <a class="navbar-brand" href="index.html">EduConnect</a>
       <div class="navbar-nav ms-auto">
         <a class="nav-link" href="forum.html">Forum</a>
+        <a class="nav-link" href="resources.html">Resources</a>
+        <a class="nav-link" href="tracker.html">Tracker</a>
+        <a class="nav-link" href="profile.html">Profile</a>
         <button class="btn btn-light ms-3" onclick="logout()">Logout</button>
       </div>
     </div>
@@ -37,13 +40,13 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">New Counseling Session</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" title="Close"></button>
         </div>
         <div class="modal-body">
           <form id="bookingForm">
             <div class="mb-3">
               <label class="form-label">Topic</label>
-              <select class="form-select" id="topicSelect" required>
+              <select class="form-select" id="topicSelect" required title="Select counseling topic" aria-label="Select counseling topic">
                 <option value="">Select a topic</option>
                 <option>Academic Guidance</option>
                 <option>Career Counseling</option>
@@ -53,15 +56,15 @@
             </div>
             <div class="mb-3">
               <label class="form-label">Date</label>
-              <input type="date" class="form-control" id="sessionDate" required>
+              <input type="date" class="form-control" id="sessionDate" required title="Session date" aria-label="Session date">
             </div>
             <div class="mb-3">
               <label class="form-label">Time</label>
-              <input type="time" class="form-control" id="sessionTime" required>
+              <input type="time" class="form-control" id="sessionTime" required title="Session time" aria-label="Session time">
             </div>
             <div class="mb-3">
               <label class="form-label">Additional Details</label>
-              <textarea class="form-control" id="sessionNotes" rows="3"></textarea>
+              <textarea class="form-control" id="sessionNotes" rows="3" title="Additional details" aria-label="Additional details"></textarea>
             </div>
             <button type="submit" class="btn btn-primary w-100">Book Session</button>
           </form>

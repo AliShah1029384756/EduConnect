@@ -1,103 +1,91 @@
 document.addEventListener('DOMContentLoaded', async () => {
   if (!checkAuth()) return;
 
-  const user = JSON.parse(localStorage.getItem('user'));
-  loadProfile(user);
-
-  // Form submission
-  document.getElementById('profileForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    await updateProfile();
-  });
-
-  // Image upload
-  document.getElementById('imageUpload').addEventListener('change', async (e) => {
-    if (e.target.files.length > 0) {
-      await uploadImage(e.target.files[0]);
-    }
-  });
+  document.getElementById('bookingForm').addEventListener('submit', submitSession);
+  await loadSessions();
 });
 
-function loadProfile(user) {
-  document.getElementById('nameInput').value = user.name || '';
-  document.getElementById('emailInput').value = user.email || '';
-  document.getElementById('bioInput').value = user.bio || '';
-  
-  if (user.imageUrl) {
-    document.getElementById('profileImage').src = user.imageUrl;
+async function submitSession(e) {
+  e.preventDefault();
+
+  const payload = {
+    topic: document.getElementById('topicSelect').value,
+    preferredDate: document.getElementById('sessionDate').value,
+    preferredTime: document.getElementById('sessionTime').value,
+    notes: document.getElementById('sessionNotes').value.trim()
+  };
+
+  const response = await apiFetch('/api/counseling', {
+    method: 'POST',
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    const err = await response.json();
+    alert(err.message || 'Booking failed');
+    return;
+  }
+
+  e.target.reset();
+  const modalEl = document.getElementById('bookingModal');
+  const modal = bootstrap.Modal.getInstance(modalEl);
+  if (modal) modal.hide();
+  await loadSessions();
+}
+
+async function loadSessions() {
+  const container = document.getElementById('sessionsContainer');
+  container.innerHTML = '<div class="col-12"><div class="alert alert-secondary">Loading sessions...</div></div>';
+
+  const response = await apiFetch('/api/counseling');
+  if (!response.ok) {
+    container.innerHTML = '<div class="col-12"><div class="alert alert-danger">Could not load sessions.</div></div>';
+    return;
+  }
+
+  const data = await response.json();
+  const sessions = data.sessions || [];
+
+  if (!sessions.length) {
+    container.innerHTML = '<div class="col-12"><div class="alert alert-info">No sessions yet. Book your first counseling session.</div></div>';
+    return;
+  }
+
+  container.innerHTML = sessions.map((s) => `
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="card-title mb-0">${escapeHtml(s.topic)}</h5>
+            <span class="badge bg-${statusColor(s.status)} text-uppercase">${s.status}</span>
+          </div>
+          <p class="card-text mb-1"><strong>Date:</strong> ${escapeHtml(s.preferredDate)}</p>
+          <p class="card-text mb-1"><strong>Time:</strong> ${escapeHtml(s.preferredTime)}</p>
+          <p class="card-text"><strong>Notes:</strong> ${escapeHtml(s.notes || '-')}</p>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function statusColor(status) {
+  switch ((status || '').toLowerCase()) {
+    case 'confirmed':
+      return 'success';
+    case 'cancelled':
+      return 'danger';
+    case 'completed':
+      return 'primary';
+    default:
+      return 'warning';
   }
 }
 
-async function updateProfile() {
-  try {
-    const response = await fetch('/api/profile', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      body: JSON.stringify({
-        name: document.getElementById('nameInput').value,
-        bio: document.getElementById('bioInput').value
-      })
-    });
-
-    if (response.ok) {
-      const updatedUser = await response.json();
-      localStorage.setItem('user', JSON.stringify(updatedUser));
-      showAlert('Profile updated successfully!', 'success');
-    } else {
-      throw new Error('Failed to update profile');
-    }
-  } catch (error) {
-    showAlert(error.message, 'danger');
-  }
-}
-
-async function uploadImage(file) {
-  const formData = new FormData();
-  formData.append('image', file);
-
-  try {
-    const response = await fetch('/api/profile/upload', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      body: formData
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      document.getElementById('profileImage').src = data.imageUrl;
-      
-      // Update local user data
-      const user = JSON.parse(localStorage.getItem('user'));
-      user.imageUrl = data.imageUrl;
-      localStorage.setItem('user', JSON.stringify(user));
-      
-      showAlert('Profile image updated!', 'success');
-    } else {
-      throw new Error('Failed to upload image');
-    }
-  } catch (error) {
-    showAlert(error.message, 'danger');
-  }
-}
-
-function showAlert(message, type) {
-  const alert = document.createElement('div');
-  alert.className = `alert alert-${type} alert-dismissible fade show`;
-  alert.innerHTML = `
-    ${message}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-  `;
-  
-  const container = document.getElementById('alertsContainer') || document.body;
-  container.prepend(alert);
-  
-  setTimeout(() => {
-    const bsAlert = new bootstrap.Alert(alert);
-    bsAlert.close();
-  }, 5000);
+function escapeHtml(text = '') {
+  return text
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
 }

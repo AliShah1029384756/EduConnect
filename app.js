@@ -17,6 +17,8 @@ const profileRoutes = require('./routes/profileRoutes');
 const counselingRoutes = require('./routes/counselingRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const mailRoutes = require('./routes/mailRoutes');
+const resourcesRoutes = require('./routes/resourcesRoutes');
+const trackerRoutes = require('./routes/trackerRoutes');
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -25,14 +27,13 @@ const errorHandler = require('./middleware/errorHandler');
 const app = express();
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useCreateIndex: true,
-  useFindAndModify: false
-})
-.then(() => console.log('MongoDB Connected'))
-.catch(err => console.error('MongoDB connection error:', err));
+if (process.env.MONGODB_URI) {
+  mongoose.connect(process.env.MONGODB_URI)
+    .then(() => console.log('MongoDB Connected'))
+    .catch((err) => console.error('MongoDB connection error:', err.message));
+} else {
+  console.warn('MONGODB_URI not provided. Server will run without database connection.');
+}
 
 // Rate limiting
 const limiter = rateLimit({
@@ -54,12 +55,18 @@ app.use(limiter);
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes
+app.get('/health', (_req, res) => {
+  res.status(200).json({ success: true, service: 'EduConnect API' });
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/forum', forumRoutes);
 app.use('/api/profile', profileRoutes);
 app.use('/api/counseling', counselingRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/mail', mailRoutes);
+app.use('/api/resources', resourcesRoutes);
+app.use('/api/tracker', trackerRoutes);
 
 // Serve frontend
 app.get('*', (req, res) => {

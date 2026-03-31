@@ -40,10 +40,12 @@
       e.preventDefault();
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
-      
-      const success = await login(email, password);
-      if (success) {
-        window.location.href = 'forum.html';
+
+      try {
+        const data = await login(email, password);
+        window.location.href = data.user.role === 'admin' ? 'admin.html' : 'forum.html';
+      } catch (err) {
+        alert(err.message || 'Login failed');
       }
     });
   </script>

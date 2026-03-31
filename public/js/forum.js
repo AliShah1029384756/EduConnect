@@ -1,261 +1,126 @@
-// Global variables
-let currentUser = null;
+let cachedPosts = [];
 
-// Initialize forum page
 document.addEventListener('DOMContentLoaded', async () => {
-  try {
-    // Check authentication
-    const token = localStorage.getItem('token');
-    if (!token) {
-      redirectToLogin();
-      return;
-    }
+  if (!checkAuth()) return;
 
-    // Get current user from localStorage
-    currentUser = JSON.parse(localStorage.getItem('user'));
-
-    // Initialize forum functionality
-    await initializeForum();
-
-  } catch (error) {
-    console.error('Initialization error:', error);
-    showError('Failed to initialize forum');
+  const user = getUser();
+  const display = document.getElementById('usernameDisplay');
+  if (display) {
+    display.textContent = user?.name || 'Student';
   }
+
+  document.getElementById('postForm')?.addEventListener('submit', handlePostSubmit);
+  document.getElementById('searchInput')?.addEventListener('input', applyFilter);
+  await loadPosts();
 });
 
-// Main forum initialization
-async function initializeForum() {
-  // Load and display posts
-  await loadAndRenderPosts();
+async function loadPosts() {
+  const container = document.getElementById('postsContainer');
+  container.innerHTML = '<div class="col-12"><div class="alert alert-secondary">Loading posts...</div></div>';
 
-  // Setup event listeners
-  setupEventListeners();
-
-  // Initialize Bootstrap tooltips
-  initTooltips();
-}
-
-// Load and render posts
-async function loadAndRenderPosts() {
-  try {
-    showLoader('#postsContainer');
-    
-    const posts = await fetchPosts();
-    
-    if (posts.length === 0) {
-      showNoPostsMessage();
-    } else {
-      renderPosts(posts);
-    }
-  } catch (error) {
-    console.error('Error loading posts:', error);
-    showError('Failed to load posts', '#postsContainer');
-  }
-}
-
-// Fetch posts from API
-async function fetchPosts() {
-  const response = await fetch('/api/forum/all', {
-    headers: {
-      'Authorization': `Bearer ${localStorage.getItem('token')}`
-    }
-  });
-
+  const response = await apiFetch('/api/forum/all');
   if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+    container.innerHTML = '<div class="col-12"><div class="alert alert-danger">Could not load forum posts.</div></div>';
+    return;
   }
 
-  return await response.json();
+  cachedPosts = await response.json();
+  renderPosts(cachedPosts);
 }
 
-// Render posts to the DOM
+function applyFilter(e) {
+  const term = (e.target.value || '').toLowerCase();
+  const filtered = cachedPosts.filter((post) => {
+    return post.title.toLowerCase().includes(term) || post.description.toLowerCase().includes(term);
+  });
+  renderPosts(filtered);
+}
+
 function renderPosts(posts) {
+  const user = getUser();
   const container = document.getElementById('postsContainer');
   container.innerHTML = '';
 
-  posts.forEach(post => {
-    const postElement = createPostElement(post);
-    container.appendChild(postElement);
-  });
-
-  // Add delete functionality for user's own posts
-  if (currentUser) {
-    setupDeleteButtons();
+  if (!posts.length) {
+    container.innerHTML = '<div class="col-12"><div class="alert alert-info">No posts yet. Start the discussion.</div></div>';
+    return;
   }
-}
 
-// Create HTML element for a single post
-function createPostElement(post) {
-  const element = document.createElement('div');
-  element.className = 'card mb-3 post-card';
-  element.innerHTML = `
-    <div class="card-body">
-      <h5 class="card-title post-title">${escapeHtml(post.title)}</h5>
-      <p class="card-text post-content">${escapeHtml(post.description)}</p>
-      <div class="d-flex justify-content-between align-items-center">
-        <small class="text-muted">
-          Posted by ${post.author?.name || 'Anonymous'} on 
-          ${new Date(post.createdAt).toLocaleDateString()}
-        </small>
-        ${showDeleteButton(post)}
+  posts.forEach((post) => {
+    const own = post.author?._id === user?._id || post.author?._id === user?.id || user?.role === 'admin';
+    const col = document.createElement('div');
+    col.className = 'col-md-6';
+    col.innerHTML = `
+      <div class="card post-card h-100">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title post-title">${escapeHtml(post.title)}</h5>
+          <p class="card-text post-content">${escapeHtml(post.description)}</p>
+          <div class="mt-auto d-flex justify-content-between align-items-center">
+            <small class="text-muted">${escapeHtml(post.author?.name || 'Anonymous')} • ${new Date(post.createdAt).toLocaleString()}</small>
+            ${own ? `<button class="btn btn-sm btn-outline-danger" data-id="${post._id}">Delete</button>` : ''}
+          </div>
+        </div>
       </div>
-    </div>
-  `;
-  return element;
-}
-
-// Show delete button for user's own posts
-function showDeleteButton(post) {
-  if (currentUser && post.author?._id === currentUser.id) {
-    return `
-      <button class="btn btn-sm btn-danger delete-post" data-id="${post._id}" title="Delete post">
-        <i class="bi bi-trash"></i>
-      </button>
     `;
-  }
-  return '';
+
+    const btn = col.querySelector('button[data-id]');
+    if (btn) {
+      btn.addEventListener('click', () => removePost(btn.getAttribute('data-id')));
+    }
+
+    container.appendChild(col);
+  });
 }
 
-// Setup all event listeners
-function setupEventListeners() {
-  // New post form submission
-  document.getElementById('postForm')?.addEventListener('submit', handlePostSubmit);
-
-  // Search functionality
-  document.getElementById('searchInput')?.addEventListener('input', handleSearch);
-
-  // Modal show/hide events
-  const postModal = document.getElementById('newPostModal');
-  if (postModal) {
-    postModal.addEventListener('show.bs.modal', resetPostForm);
-    postModal.addEventListener('hidden.bs.modal', resetPostForm);
-  }
-}
-
-// Handle post submission
 async function handlePostSubmit(e) {
   e.preventDefault();
-  
   const title = document.getElementById('postTitle').value.trim();
   const description = document.getElementById('postDescription').value.trim();
 
   if (!title || !description) {
-    showAlert('Please fill in all fields', 'warning');
+    alert('Title and content are required.');
     return;
   }
 
-  try {
-    const response = await fetch('/api/forum', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
-      body: JSON.stringify({ title, description })
-    });
-
-    if (response.ok) {
-      const modal = bootstrap.Modal.getInstance(document.getElementById('newPostModal'));
-      modal.hide();
-      await loadAndRenderPosts();
-      showAlert('Post created successfully!', 'success');
-    } else {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to create post');
-    }
-  } catch (error) {
-    console.error('Error creating post:', error);
-    showAlert(error.message || 'Failed to create post', 'danger');
-  }
-}
-
-// Handle search functionality
-function handleSearch(e) {
-  const searchTerm = e.target.value.toLowerCase();
-  const posts = document.querySelectorAll('.post-card');
-  
-  posts.forEach(post => {
-    const title = post.querySelector('.post-title').textContent.toLowerCase();
-    const content = post.querySelector('.post-content').textContent.toLowerCase();
-    post.style.display = (title.includes(searchTerm) || content.includes(searchTerm)) 
-      ? 'block' 
-      : 'none';
+  const response = await apiFetch('/api/forum', {
+    method: 'POST',
+    body: JSON.stringify({ title, description })
   });
-}
 
-// Setup delete buttons with event listeners
-function setupDeleteButtons() {
-  document.querySelectorAll('.delete-post').forEach(button => {
-    button.addEventListener('click', handleDeletePost);
-  });
-}
-
-// Handle post deletion
-async function handleDeletePost(e) {
-  const postId = e.currentTarget.getAttribute('data-id');
-  
-  if (!confirm('Are you sure you want to delete this post?')) {
+  if (!response.ok) {
+    const err = await response.json();
+    alert(err.message || 'Could not create post');
     return;
   }
 
-  try {
-    const response = await fetch(`/api/forum/${postId}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    });
+  const modalEl = document.getElementById('newPostModal');
+  const modal = bootstrap.Modal.getInstance(modalEl);
+  if (modal) modal.hide();
+  e.target.reset();
+  await loadPosts();
+}
 
-    if (response.ok) {
-      await loadAndRenderPosts();
-      showAlert('Post deleted successfully', 'success');
-    } else {
-      throw new Error('Failed to delete post');
-    }
-  } catch (error) {
-    console.error('Error deleting post:', error);
-    showAlert('Failed to delete post', 'danger');
+async function removePost(id) {
+  const ok = confirm('Delete this post?');
+  if (!ok) return;
+
+  const response = await apiFetch(`/api/forum/${id}`, { method: 'DELETE' });
+  if (!response.ok) {
+    const err = await response.json();
+    alert(err.message || 'Delete failed');
+    return;
   }
+
+  await loadPosts();
 }
 
-// Helper functions
-function redirectToLogin() {
-  window.location.href = '/index1.html';
-}
-
-function showLoader(container) {
-  const target = document.querySelector(container);
-  if (target) {
-    target.innerHTML = `
-      <div class="text-center py-4">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Loading...</span>
-        </div>
-        <p class="mt-2">Loading posts...</p>
-      </div>
-    `;
-  }
-}
-
-function showNoPostsMessage() {
-  const container = document.getElementById('postsContainer');
-  container.innerHTML = `
-    <div class="alert alert-info text-center">
-      No posts found. Be the first to post!
-    </div>
-  `;
-}
-
-function showError(message, container = 'body') {
-  const target = document.querySelector(container);
-  if (target) {
-    const alert = document.createElement('div');
-    alert.className = 'alert alert-danger';
-    alert.textContent = message;
-    target.prepend(alert);
-    
-    setTimeout(() => alert.remove(), 5000);
-  }
+function escapeHtml(text = '') {
+  return text
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
 }
 
 function showAlert(message, type) {

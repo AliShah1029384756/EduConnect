@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
   if (!checkAuth()) return;
 
-  const user = JSON.parse(localStorage.getItem('user'));
+  const user = getUser();
   if (user.role !== 'admin') {
     window.location.href = 'forum.html';
     return;
@@ -22,11 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function loadDashboardStats() {
   try {
-    const response = await fetch('/api/admin/dashboard', {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    });
+    const response = await apiFetch('/api/admin/dashboard');
 
     if (response.ok) {
       const stats = await response.json();
@@ -41,11 +37,7 @@ async function loadDashboardStats() {
 
 async function loadUsers() {
   try {
-    const response = await fetch('/api/admin/users', {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    });
+    const response = await apiFetch('/api/admin/users');
 
     if (response.ok) {
       const users = await response.json();
@@ -58,11 +50,7 @@ async function loadUsers() {
 
 async function loadSessions() {
   try {
-    const response = await fetch('/api/admin/sessions', {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    });
+    const response = await apiFetch('/api/admin/sessions');
 
     if (response.ok) {
       const sessions = await response.json();
@@ -124,12 +112,8 @@ function renderSessions(sessions) {
 
 async function updateUserRole(userId, role) {
   try {
-    const response = await fetch(`/api/admin/users/${userId}/role`, {
+    const response = await apiFetch(`/api/admin/users/${userId}/role`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      },
       body: JSON.stringify({ role })
     });
 
@@ -146,12 +130,7 @@ async function deleteUser(userId) {
   if (!confirm('Are you sure you want to delete this user?')) return;
 
   try {
-    const response = await fetch(`/api/admin/users/${userId}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('token')}`
-      }
-    });
+    const response = await apiFetch(`/api/admin/users/${userId}`, { method: 'DELETE' });
 
     if (response.ok) {
       await loadUsers();
@@ -172,4 +151,13 @@ function getStatusColor(status) {
     case 'cancelled': return 'danger';
     default: return 'secondary';
   }
+}
+
+function showAlert(message, type) {
+  const alert = document.createElement('div');
+  alert.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
+  alert.style.zIndex = '1080';
+  alert.innerHTML = `${message}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+  document.body.appendChild(alert);
+  setTimeout(() => alert.remove(), 3000);
 }

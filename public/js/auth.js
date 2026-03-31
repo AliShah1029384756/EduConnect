@@ -1,129 +1,144 @@
-// Handle login form submission
-document.getElementById('signin-form')?.addEventListener('submit', async function(e) {
-  e.preventDefault();
-  
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
+const PUBLIC_PATHS = ['/login.html', '/register.html', '/forgot-password.html', '/index.html'];
 
+function isPublicPage() {
+  return PUBLIC_PATHS.some((p) => window.location.pathname.endsWith(p)) || window.location.pathname === '/';
+}
+
+function getToken() {
+  return localStorage.getItem('token');
+}
+
+function getUser() {
   try {
-    const response = await fetch('/api/auth/signin', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ email, password })
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      // Store token and user data
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('token_expires', data.expiresIn);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      
-      // Redirect based on role
-      if (data.user.role === 'admin') {
-        window.location.href = '/admin.html';
-      } else {
-        window.location.href = '/forum.html';
-      }
-    } else {
-      alert(data.message || 'Login failed');
-    }
-  } catch (err) {
-    console.error('Login error:', err);
-    alert('Login failed. Please try again.');
+    return JSON.parse(localStorage.getItem('user') || 'null');
+  } catch (_err) {
+    return null;
   }
-});
+}
 
-// Check token expiration every minute
-setInterval(() => {
-  const token = localStorage.getItem('token');
-  const expires = localStorage.getItem('token_expires');
-  
-  if (token && expires) {
-    const now = new Date();
-    const expiresAt = new Date(expires);
-    const timeLeft = expiresAt - now;
-    
-    if (timeLeft < 300000 && timeLeft > 0) { // 5 minutes
-      alert(`Your session will expire in ${Math.floor(timeLeft / 60000)} minutes. Please save your work.`);
-    }
-    
-    if (timeLeft <= 0) {
-      localStorage.clear();
-      window.location.href = '/index1.html';
-    }
-  }
-}, 60000); // Check every minute
+function saveSession(data) {
+  localStorage.setItem('token', data.token);
+  localStorage.setItem('token_expires', data.expiresIn);
+  localStorage.setItem('user', JSON.stringify(data.user));
+}
 
-// Initialize check on page load
-document.addEventListener('DOMContentLoaded', () => {
-  const token = localStorage.getItem('token');
-  if (!token && !window.location.pathname.includes('index1.html')) {
-    window.location.href = '/index1.html';
-  }
-});
+function clearSession() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('token_expires');
+  localStorage.removeItem('user');
+}
 
-// Check authentication status
 function checkAuth() {
-  const token = localStorage.getItem('token');
-  if (!token && !window.location.pathname.includes('login.html')) {
+  const token = getToken();
+  if (!token && !isPublicPage()) {
+    window.location.href = 'login.html';
+    return false;
+  }
+  return true;
+}
+
+async function apiFetch(url, options = {}) {
+  const headers = {
+    ...(options.headers || {}),
+    'Content-Type': options.body instanceof FormData ? undefined : 'application/json'
+  };
+
+  if (headers['Content-Type'] === undefined) {
+    delete headers['Content-Type'];
+  }
+
+  const token = getToken();
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const response = await fetch(url, {
+    ...options,
+    headers
+  });
+
+  if (response.status === 401 && !isPublicPage()) {
+    clearSession();
     window.location.href = 'login.html';
   }
+
+  return response;
 }
 
-// Login function
 async function login(email, password) {
-  try {
-    const response = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ email, password })
-    });
+  const response = await fetch('/api/auth/signin', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  });
+  const data = await response.json();
 
-    const data = await response.json();
-    
-    if (response.ok) {
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      window.location.href = 'forum.html';
-    } else {
-      alert(data.message || 'Login failed');
-    }
-  } catch (error) {
-    console.error('Login error:', error);
-    alert('An error occurred during login');
+  if (!response.ok) {
+    throw new Error(data.message || 'Login failed');
   }
+
+  saveSession(data);
+  return data;
 }
 
-// Logout function
+async function register(payload) {
+  const response = await fetch('/api/auth/signup', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Signup failed');
+  }
+
+  saveSession(data);
+  return data;
+}
+
 function logout() {
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
+  clearSession();
   window.location.href = 'login.html';
 }
 
-// Check token expiration every 5 minutes
-setInterval(() => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    fetch('/api/auth/check-token', {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    })
-      .then(response => response.json())
-      .then(data => {
-        if (data.expiresSoon) {
-          alert(`Your session will expire in ${data.minutesLeft} minutes`);
-        }
-      });
-  }
-}, 300000); // 5 minutes
+let warnedSoon = false;
+setInterval(async () => {
+  const token = getToken();
+  if (!token) return;
 
-// Initialize auth check on page load
-document.addEventListener('DOMContentLoaded', checkAuth);
+  try {
+    const response = await fetch('/api/auth/check-token', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    if (!response.ok) {
+      clearSession();
+      if (!isPublicPage()) {
+        window.location.href = 'login.html';
+      }
+      return;
+    }
+
+    const data = await response.json();
+    if (data.expiresSoon && !warnedSoon) {
+      warnedSoon = true;
+      alert(`Session will expire in ${data.minutesLeft} minute(s).`);
+    }
+  } catch (_err) {
+    // Silent network check; next action occurs on real API calls.
+  }
+}, 300000);
+
+window.checkAuth = checkAuth;
+window.login = login;
+window.register = register;
+window.logout = logout;
+window.apiFetch = apiFetch;
+window.getUser = getUser;
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (!isPublicPage()) {
+    checkAuth();
+  }
+});
