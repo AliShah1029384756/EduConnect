@@ -107,6 +107,13 @@ EduConnect/
 - Never commit production secrets
 - Validate role/auth middleware before deployment
 
+## Useful References
+
+- [Express.js Guide](https://expressjs.com/) - Routing and middleware reference
+- [Mongoose Docs](https://mongoosejs.com/docs/) - Schema, model, and query reference
+- [OWASP Cheat Sheet Series](https://cheatsheetseries.owasp.org/) - Authentication and session security guidance
+- [Node.js Docs](https://nodejs.org/en/docs) - Runtime and standard library reference
+
 ## License and Contact
 
 - License: Add repository license file if publishing externally
