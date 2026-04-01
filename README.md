@@ -88,7 +88,6 @@ EduConnect/
 ## Screenshots and Demo
 
 - Portfolio case-study page: https://alishah1029384756.github.io/AliShah1029384756/projects/educonnect.html
-- Repository visuals can be added under `public/` with descriptive captions
 
 ## Outcomes and Learning
 
