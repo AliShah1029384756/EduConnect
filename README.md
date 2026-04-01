@@ -1,109 +1,117 @@
 # EduConnect
 
-EduConnect is an educational platform project built with Node.js, Express, and static frontend assets (HTML/CSS/JavaScript).
+![Type](https://img.shields.io/badge/Type-Full--Stack%20Web%20Application-0ea5e9)
+![Domain](https://img.shields.io/badge/Domain-Education%20Support-16a34a)
+![Status](https://img.shields.io/badge/Status-Active%20Development-f59e0b)
 
-## Status
+Student support platform focused on forum discussion, counseling workflows, resource access, and academic progress visibility.
 
-- Upload-ready for private repository storage and future extension.
-- Backend routes and middleware are structured and runnable.
-- Frontend is served from `public/`.
-- Core student-value modules are implemented: forum, counseling, resources, tracker, profile, and admin panel.
+## Open This First
+
+1. `app.js` - Application bootstrap and middleware registration
+2. `routes/` - Route-level feature boundaries
+3. `controllers/` - Business workflow handlers
+4. `middleware/` - Auth, validation, and security checks
+
+## Project Overview
+
+EduConnect is designed to centralize student support functions that are usually split across disconnected systems. It combines communication, counseling, learning resources, and profile-level progress context in one platform.
+
+## Problem Statement
+
+Student support operations are often fragmented:
+- community discussion in one place
+- counseling coordination in another
+- resource tracking in separate channels
+
+EduConnect addresses this by providing a unified, role-aware workflow for students and platform administrators.
+
+## Core Features
+
+1. Authentication and access control
+2. Forum and community threads
+3. Counseling request workflow
+4. Resource discovery and bookmarking
+5. Progress tracker and analytics
+6. Profile management
+7. Admin monitoring dashboard
 
 ## Tech Stack
 
-- Node.js
-- Express.js
-- MongoDB (optional in local bootstrap mode)
-- Vanilla HTML/CSS/JavaScript frontend
+- Backend: Node.js, Express.js
+- Database: MongoDB (via Mongoose)
+- Frontend: HTML, CSS, JavaScript (served via Express)
+- Security: Helmet, rate limiting, mongo sanitize, XSS clean, HPP
+- Utilities: JWT, bcryptjs, nodemailer, multer
 
-## Project Structure
+## Architecture Snapshot
+
+- `app.js` initializes middleware, routes, and DB connectivity
+- `routes/` maps endpoints by feature area
+- `controllers/` contains request-level business logic
+- `middleware/` enforces auth/security boundaries
+- `utils/` stores reusable helper functions
+
+## Setup and Run
+
+```bash
+npm install
+npm run dev
+```
+
+Production start:
+
+```bash
+npm start
+```
+
+Default URL: `http://localhost:5000`
+
+## Health Check Endpoint
+
+- `GET /health`
+
+## Folder Structure
 
 ```text
 EduConnect/
 |- app.js
-|- package.json
-|- .env.example
 |- config/
-|  |- multer.js
 |- controllers/
-|  |- adminController.js
-|  |- authController.js
-|  |- counselingController.js
-|  |- forumController.js
-|  |- mailController.js
-|  |- profileController.js
 |- middleware/
-|  |- auth.js
-|  |- errorHandler.js
-|- routes/
-|  |- adminRoutes.js
-|  |- authRoutes.js
-|  |- counselingRoutes.js
-|  |- forumRoutes.js
-|  |- mailRoutes.js
-|  |- profileRoutes.js
 |- public/
-|  |- index.html
-|  |- login.html
-|  |- register.html
-|  |- ...
+|- routes/
 |- utils/
-|  |- errorResponse.js
+|- .env.example
 ```
 
-## Quick Start
+## Screenshots and Demo
 
-1. Install dependencies:
+- Portfolio case-study page: https://alishah1029384756.github.io/AliShah1029384756/projects/educonnect.html
+- Repository visuals can be added under `public/` with descriptive captions
 
-```bash
-npm install
-```
+## Outcomes and Learning
 
-2. Create environment file:
+- Practical full-stack architecture with modular route/controller flow
+- Security middleware layering for student-facing platform hardening
+- Workflow-first feature design for education support use-cases
 
-```bash
-cp .env.example .env
-```
+## Status
 
-3. Start server:
+- Current state: Active development-ready codebase
+- Code organization: Modular and extendable
+- Documentation style: Professional project-grade structure
 
-```bash
-npm run dev
-```
+## Security Notes
 
-Server default URL: `http://localhost:5000`
+- Keep credentials in `.env` only
+- Never commit production secrets
+- Validate role/auth middleware before deployment
 
-## Demo Credentials
+## License and Contact
 
-- Admin: `admin@educonnect.com`
-- Password: `Admin@123`
+- License: Add repository license file if publishing externally
+- Maintainer: Syed Muhammad Ali Naqvi
+- GitHub: https://github.com/AliShah1029384756
 
-Use this account to review admin dashboard, role management, and platform metrics.
-
-## Implemented Modules
-
-1. Authentication and session guard
-2. Student discussion forum with ownership-based deletion
-3. Counseling booking and session tracking
-4. Resource discovery with search, filtering, and bookmarking
-5. Weekly progress tracker with summary analytics
-6. User profile update and image upload
-7. Admin dashboard for users, sessions, and platform stats
-
-## Health Check
-
-- Endpoint: `GET /health`
-- Expected response:
-
-```json
-{
-	"success": true,
-	"service": "EduConnect API"
-}
-```
-
-## Notes
-
-- If `MONGODB_URI` is missing, server still starts for API/bootstrap verification.
-- Use `JWT_SECRET` in `.env` before protected route testing.
-- This repository is intended to remain private unless explicitly published.
+Last verified: April 1, 2026
